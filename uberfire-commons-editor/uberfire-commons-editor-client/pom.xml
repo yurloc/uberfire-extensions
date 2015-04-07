@@ -67,6 +67,13 @@
       <artifactId>mockito-all</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- Required by com.google.gwt.event.dom.client.ClickEvent -->
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-dev</artifactId>
+      <scope>test</scope>
+    </dependency>
+
 
   </dependencies>
 
