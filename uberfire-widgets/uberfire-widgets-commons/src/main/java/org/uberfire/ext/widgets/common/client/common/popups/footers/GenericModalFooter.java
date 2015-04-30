@@ -47,6 +47,10 @@ public class GenericModalFooter extends ModalFooter {
         add( uiBinder.createAndBindUi( this ) );
     }
 
+    /**
+     * @deprecated Passing logic wrapped into the command to widgets prevents testing.
+     */
+    @Deprecated
     public void addButton( final String caption,
                            final Command command,
                            final ButtonType buttonType ) {
@@ -63,6 +67,10 @@ public class GenericModalFooter extends ModalFooter {
         footer.add( button );
     }
 
+    /**
+     * @deprecated Passing logic wrapped into the command to widgets prevents testing.
+     */
+    @Deprecated
     public void addButton( final String caption,
                            final Command command,
                            final IconType iconType,
@@ -81,4 +89,21 @@ public class GenericModalFooter extends ModalFooter {
         footer.add( button );
     }
 
+    public Button addButton( final String caption,
+                             final ButtonType buttonType ) {
+        final Button button = new Button( caption );
+        button.setType( buttonType );
+        footer.add( button );
+        return button;
+    }
+
+    public Button addButton( final String caption,
+                             final IconType iconType,
+                             final ButtonType buttonType ) {
+        final Button button = new Button( caption );
+        button.setType( buttonType );
+        button.setIcon( iconType );
+        footer.add( button );
+        return button;
+    }
 }

@@ -30,6 +30,7 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.commons.data.Pair;
 import org.uberfire.ext.editor.commons.client.file.CommandWithFileNameAndCommitMessage;
 import org.uberfire.ext.editor.commons.client.file.CopyPopup;
+import org.uberfire.ext.editor.commons.client.file.CopyPopupView;
 import org.uberfire.ext.editor.commons.client.file.DeletePopup;
 import org.uberfire.ext.editor.commons.client.file.FileNameAndCommitMessage;
 import org.uberfire.ext.editor.commons.client.file.RenamePopup;
@@ -211,7 +212,7 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
                                                                                                                                                       details.getNewFileName(),
                                                                                                                                                       details.getCommitMessage() );
                                                            }
-                                                       } );
+                                                       }, new CopyPopupView() );
                 popup.show();
             }
         } );
@@ -235,7 +236,7 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
                                                                                                                                                       details.getNewFileName(),
                                                                                                                                                       details.getCommitMessage() );
                                                            }
-                                                       } );
+                                                       }, new CopyPopupView() );
                 popup.show();
             }
         } );
