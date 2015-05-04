@@ -15,10 +15,6 @@
  */
 package org.uberfire.ext.editor.commons.client.file;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.user.client.ui.HasText;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,29 +39,19 @@ public class CopyPopupTest {
 
     private Validator successValidator;
     private Validator failureValidator;
-    private CopyPopup.View view;
+    private CopyPopupUberView view;
 
     @Captor
     private ArgumentCaptor<FileNameAndCommitMessage> msgCaptor;
-    @Captor
-    private ArgumentCaptor<ClickHandler> clickHandlerCaptor;
 
     @Mock
     private Path path;
     @Mock
     private CommandWithFileNameAndCommitMessage command;
-    @Mock
-    private HasClickHandlers copyButton;
-    @Mock
-    private HasClickHandlers cancelButton;
-    @Mock
-    private HasText nameText;
-    @Mock
-    private HasText commentText;
 
     @Before
     public void setUp() {
-        view = mock( CopyPopup.View.class );
+        view = mock( CopyPopupUberView.class );
 
         // stub return values
         when( path.getFileName() ).thenReturn( PATH );
@@ -86,25 +72,18 @@ public class CopyPopupTest {
             }
         } );
 
-        // stub test fields
-        when( nameText.getText() ).thenReturn( NAME_TEXT );
-        when( commentText.getText() ).thenReturn( COMMENT_TEXT );
-        // wire mocks together
-        when( view.getCancelButton() ).thenReturn( cancelButton );
-        when( view.getCopyButton() ).thenReturn( copyButton );
-        when( view.getCheckInComment() ).thenReturn( commentText );
-        when( view.getNewName() ).thenReturn( nameText );
+        // stub view
+        when( view.getCheckInComment() ).thenReturn( COMMENT_TEXT );
+        when( view.getNewName() ).thenReturn( NAME_TEXT );
     }
 
     @Test
     public void testSuccessfulValidation() {
         // success
         CopyPopup popup = new CopyPopup( path, successValidator, command, view );
-        verify( copyButton ).addClickHandler( clickHandlerCaptor.capture() );
 
         // simulate submitting the popup
-        clickHandlerCaptor.getValue().onClick( new ClickEvent() {
-        } );
+        popup.onCopy();
 
         // validation was invoked
         verify( successValidator ).validate( any( String.class ), any( ValidatorCallback.class ) );
@@ -119,13 +98,11 @@ public class CopyPopupTest {
 
     @Test
     public void testFailedValidation() {
-        // create copy popup
+        // create onCopy popup
         CopyPopup popup = new CopyPopup( path, failureValidator, command, view );
-        verify( copyButton ).addClickHandler( clickHandlerCaptor.capture() );
 
         // simulate submitting the popup
-        clickHandlerCaptor.getValue().onClick( new ClickEvent() {
-        } );
+        popup.onCopy();
 
         // verify validation was invoked
         verify( failureValidator ).validate( anyString(), any( ValidatorCallback.class ) );
@@ -139,13 +116,11 @@ public class CopyPopupTest {
 
     @Test
     public void testPopupCanceled() {
-        // create copy popup
+        // create onCopy popup
         CopyPopup popup = new CopyPopup( path, successValidator, command, view );
-        verify( cancelButton ).addClickHandler( clickHandlerCaptor.capture() );
 
-        // simulate submitting the popup
-        clickHandlerCaptor.getValue().onClick( new ClickEvent() {
-        } );
+        // simulate cancelling the popup
+        popup.onCancel();
 
         // validation was NOT invoked
         verify( successValidator, never() ).validate( anyString(), any( ValidatorCallback.class ) );

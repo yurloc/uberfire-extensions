@@ -15,38 +15,21 @@
  */
 package org.uberfire.ext.editor.commons.client.file;
 
-import com.github.gwtbootstrap.client.ui.base.HasVisibility;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.user.client.ui.HasText;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.ext.editor.commons.client.validation.Validator;
 import org.uberfire.ext.editor.commons.client.validation.ValidatorCallback;
 
 import static org.uberfire.commons.validation.PortablePreconditions.*;
 
-public class CopyPopup {
+public class CopyPopup implements CopyPopupUberView.Presenter {
 
-    public interface View extends HasVisibility {
-
-        HasText getNewName();
-
-        HasText getCheckInComment();
-
-        HasClickHandlers getCopyButton();
-
-        HasClickHandlers getCancelButton();
-
-        void handleInvalidFileName( String baseFileName );
-    }
-
-    private final View view;
+    // TODO make the view @Inject'ed?
+    private final CopyPopupUberView view;
     private final Path path;
     private final Validator validator;
     private final CommandWithFileNameAndCommitMessage command;
 
-    public CopyPopup( Path path, CommandWithFileNameAndCommitMessage command, View view ) {
+    public CopyPopup( Path path, CommandWithFileNameAndCommitMessage command, CopyPopupUberView view ) {
         this( path,
               new Validator() {
                   @Override
@@ -58,7 +41,7 @@ public class CopyPopup {
               command, view );
     }
 
-    public CopyPopup( Path path, Validator validator, CommandWithFileNameAndCommitMessage command, View view ) {
+    public CopyPopup( Path path, Validator validator, CommandWithFileNameAndCommitMessage command, CopyPopupUberView view ) {
         this.validator = checkNotNull( "validator",
                                        validator );
         this.path = checkNotNull( "path",
@@ -67,20 +50,6 @@ public class CopyPopup {
                                      command );
         this.view = checkNotNull( "view",
                                   view );
-        this.view.getCopyButton().addClickHandler( new ClickHandler() {
-
-            @Override
-            public void onClick( ClickEvent event ) {
-                copy();
-            }
-        } );
-        this.view.getCancelButton().addClickHandler( new ClickHandler() {
-
-            @Override
-            public void onClick( ClickEvent event ) {
-                hide();
-            }
-        } );
     }
 
     public void show() {
@@ -91,8 +60,14 @@ public class CopyPopup {
         view.hide();
     }
 
-    void copy() {
-        final String baseFileName = view.getNewName().getText();
+    @Override
+    public void onCancel() {
+        hide();
+    }
+
+    @Override
+    public void onCopy() {
+        final String baseFileName = view.getNewName();
         final String originalFileName = path.getFileName();
         final String extension = ( originalFileName.lastIndexOf( "." ) > 0
                 ? originalFileName.substring( originalFileName.lastIndexOf( "." ) ) : "" );
@@ -104,7 +79,7 @@ public class CopyPopup {
                                 public void onSuccess() {
                                     hide();
                                     command.execute( new FileNameAndCommitMessage( baseFileName,
-                                                                                   view.getCheckInComment().getText() ) );
+                                                                                   view.getCheckInComment() ) );
                                 }
 
                                 @Override

@@ -15,24 +15,21 @@
  */
 package org.uberfire.ext.editor.commons.client.file;
 
-import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.HasText;
 import org.uberfire.ext.editor.commons.client.resources.CommonImages;
 import org.uberfire.ext.editor.commons.client.resources.i18n.CommonConstants;
 import org.uberfire.ext.widgets.common.client.common.popups.FormStylePopup;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
+import org.uberfire.mvp.Command;
 
-public class CopyPopupView extends FormStylePopup implements CopyPopup.View {
+public class CopyPopupView extends FormStylePopup implements CopyPopupUberView {
 
     final private TextBox nameTextBox = new TextBox();
     final private TextBox checkInCommentTextBox = new TextBox();
-    private final Button copy;
-    private final Button cancel;
+    private Presenter presenter;
 
     public CopyPopupView() {
         super( CommonImages.INSTANCE.edit(),
@@ -52,32 +49,39 @@ public class CopyPopupView extends FormStylePopup implements CopyPopup.View {
         hide();
 
         GenericModalFooter footer = new GenericModalFooter();
-        this.copy = footer.addButton( CommonConstants.INSTANCE.CopyPopupCreateACopy(),
-                                      IconType.SAVE,
-                                      ButtonType.PRIMARY );
-        this.cancel = footer.addButton( CommonConstants.INSTANCE.Cancel(),
-                                        ButtonType.DEFAULT );
+        footer.addButton( CommonConstants.INSTANCE.CopyPopupCreateACopy(),
+                          new Command() {
+                              @Override
+                              public void execute() {
+                                  presenter.onCopy();
+                              }
+                          },
+                          IconType.SAVE,
+                          ButtonType.PRIMARY );
+        footer.addButton( CommonConstants.INSTANCE.Cancel(),
+                          new Command() {
+                              @Override
+                              public void execute() {
+                                  presenter.onCancel();
+                              }
+                          },
+                          ButtonType.DEFAULT );
         add( footer );
     }
 
     @Override
-    public HasText getNewName() {
-        return nameTextBox;
+    public void init( Presenter presenter ) {
+        this.presenter = presenter;
     }
 
     @Override
-    public HasText getCheckInComment() {
-        return checkInCommentTextBox;
+    public String getNewName() {
+        return nameTextBox.getText();
     }
 
     @Override
-    public HasClickHandlers getCopyButton() {
-        return copy;
-    }
-
-    @Override
-    public HasClickHandlers getCancelButton() {
-        return cancel;
+    public String getCheckInComment() {
+        return checkInCommentTextBox.getText();
     }
 
     @Override
